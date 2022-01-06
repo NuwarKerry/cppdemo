@@ -68,6 +68,7 @@
         "map": "cpp",
         "variant": "cpp",
         "concepts": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "stack": "cpp"
     }
 }

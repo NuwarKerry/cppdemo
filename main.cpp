@@ -27,6 +27,7 @@
 #include <sstream>
 #include <time.h>
 #include <chrono>
+#include "nomalTreee.h"
 using namespace std;
 
 template <size_t n, typename... T>
@@ -127,16 +128,88 @@ void readCSV(){
     printf(" end - begin : [%d] \n", end - begin);
 }
 
-int main(){
-    //writeCSV();
-    readCSV();
-    // map<tuple<int, float, double, string>, string> t_map;
-    // t_map.insert(make_pair(make_tuple(1,2.0,3.0,"hello"), "world"));
-    // printf("%s \n", t_map[make_tuple(1,2.0,3.0,"hello")].c_str()); 
-    // thread t([](int a, int b, int c){sleep(10); printf("a = [%d], b = [%d], c = [%d] \n", a, b, c);}, 2000, 3000, 4000);
-    // t.join();
-    // test(20, 30);
+static int counts = 0;
+
+struct node
+{
+    string data;
+    node *p_rNode, *p_lNode;
+    node(){
+        p_rNode = p_lNode = nullptr;
+    }
+};
+
+void create_tree(node* &T)
+{
+    string c;
+    cout << "请输入需要插入的字符串" << endl;
+	cin >> c;
+	if(c.find("null") != string::npos || c.find("NULL") != string::npos)
+    {
+        return;
+    }
+		
+    printf("counts : [%d], input : [%s] \n", counts++, c.c_str());
+	T=new node;
+	T->data=c;
+	T->p_rNode=NULL;
+	T->p_lNode=NULL;
+	create_tree(T->p_lNode);
+	create_tree(T->p_rNode);
 }
+
+void prior_order1(node* T)//递归先序遍历二叉树
+{
+	if(T)
+	{
+		printf("%s ", T->data.c_str());
+		prior_order1(T->p_lNode);
+		prior_order1(T->p_rNode);
+	}
+}
+
+void prior_order2(node* T)//递归先序遍历二叉树
+{
+	if(T)
+	{
+		prior_order1(T->p_lNode);
+		printf("%s ", T->data.c_str());
+		prior_order1(T->p_rNode);
+	}
+}
+
+void prior_order3(node* T)//递归先序遍历二叉树
+{
+	if(T)
+	{
+		prior_order1(T->p_lNode);
+		prior_order1(T->p_rNode);
+		printf("%s ", T->data.c_str());
+	}
+}
+
+
+int main(){
+    node* p = new node();
+    create_tree(p);
+    prior_order1(p);
+    printf("\n");
+    prior_order2(p);
+    printf("\n");
+    prior_order3(p);
+    printf("\n");
+}
+
+// int main(){
+//     //writeCSV();
+//     readCSV();
+//     // map<tuple<int, float, double, string>, string> t_map;
+//     // t_map.insert(make_pair(make_tuple(1,2.0,3.0,"hello"), "world"));
+//     // printf("%s \n", t_map[make_tuple(1,2.0,3.0,"hello")].c_str()); 
+//     // thread t([](int a, int b, int c){sleep(10); printf("a = [%d], b = [%d], c = [%d] \n", a, b, c);}, 2000, 3000, 4000);
+//     // t.join();
+//     // test(20, 30);
+// }
 
 /*
 int main(){
