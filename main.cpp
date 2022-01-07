@@ -26,8 +26,7 @@
 #include <fstream>
 #include <sstream>
 #include <time.h>
-#include <chrono>
-#include "nomalTreee.h"
+#include <sys/time.h>
 using namespace std;
 
 template <size_t n, typename... T>
@@ -188,16 +187,65 @@ void prior_order3(node* T)//递归先序遍历二叉树
 	}
 }
 
+int get_now_time(){
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000 + tv.tv_usec;
+}
 
-int main(){
-    node* p = new node();
-    create_tree(p);
-    prior_order1(p);
-    printf("\n");
-    prior_order2(p);
-    printf("\n");
-    prior_order3(p);
-    printf("\n");
+typedef struct Cache__
+{
+    char value[256];
+    uint64_t expire_time;
+    uint64_t create_time;
+}CACHE;
+
+map<int, CACHE> MyCache;
+
+bool check_cache_exist_and_insert(int key, char* msg = nullptr){
+    if(key < 0)
+    {
+        printf("it is not goof key \n");
+        return false;
+    }
+
+    auto iter = MyCache.find(key);
+    if(iter != MyCache.end())
+    {
+        const auto c = iter->second;
+        uint64_t now_time = get_now_time();
+        if(now_time - c.create_time > c.expire_time)
+        {
+            printf("expired \n");
+            return false;
+        }
+        return true;
+    }
+    else{
+        CACHE c;
+        sprintf(c.value, "%s", msg);
+        c.create_time = get_now_time();
+        c.expire_time = (rand()%20) * 1000000;
+        MyCache.insert(make_pair(key, c));
+        printf("add cache \n");
+        return true;
+    }
+}
+
+
+int main(){ 
+    if(!check_cache_exist_and_insert(1, "hello_wrold"))
+        printf("error - 1");
+    if(!check_cache_exist_and_insert(2, "o ha yo"))
+        printf("error - 2");
+    if(!check_cache_exist_and_insert(3, "yo lo xi ku"))
+        printf("error - 3");
+    if(!check_cache_exist_and_insert(4, " 你好"))
+        printf("error - 4");
+    
+    sleep(20);
+    if(!check_cache_exist_and_insert(1))
+        printf("error - 5");
 }
 
 // int main(){
